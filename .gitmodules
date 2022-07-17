@@ -1,0 +1,3 @@
+[submodule "vendor/nana"]
+	path = vendor/nana
+	url = https://github.com/ihy123/nana.git
