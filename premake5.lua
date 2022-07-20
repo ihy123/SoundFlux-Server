@@ -1,10 +1,11 @@
 workspace "SoundFlux"
 	configurations { "Debug", "Release" }
 	architecture "x86_64"
-	--platforms { "x86_64" }
 	cppdialect "C++20"
 		
-include "vendor/nana"
+include "scripts/nana.lua"
+include "scripts/ssdp-connect.lua"
+include "scripts/inicpp.lua"
 
 project "SoundFlux-Server"
 	kind "ConsoleApp"
@@ -18,11 +19,20 @@ project "SoundFlux-Server"
 	pchheader "pch.h"
 	pchsource "pch/pch.cpp"
 	
-	includedirs { "pch", "vendor/nana/include" }
+	-- set include directories
+	includedirs { "pch", "vendor/nana/include", "vendor/ssdp-connect", "vendor/spdlog/include", "vendor/inicpp/include" }
 		
 	-- link dependencies
-	links { "nana", "Ws2_32.lib" }
-		
+	links { "nana", "ssdp-connect", "inicpp" }
+
+	filter "system:windows"
+		defines { "SF_PLATFORM_WINDOWS" }
+		links { "Ws2_32.lib" }
+
+	filter "system:linux or android"
+		defines { "SF_PLATFORM_UNIX" }
+		links { "pthread", "dl" }
+
 	-- set up configurations
 	filter "configurations:Release"
 		optimize "Speed"
